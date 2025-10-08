@@ -2,7 +2,7 @@ import os
 import requests
 
 # === SETTINGS ===
-base_url = "https://d3e4y8hquds3ek.cloudfront.net/institute/brilliantpalaelearn/courses/long-term-super-batch-medical-2025-online-g1/videos/transcoded/53b0a1abd7d74085865cdd0f9ca79bc0"
+base_url = "<link for the file>"
 quality = "720p"   # change to "240p" if you want that version
 start = 121          # first video number
 end = 543          # last video number
@@ -29,4 +29,5 @@ for i in range(start, end + 1):
     except Exception as e:
         print(f"Failed {url} -> {e}")
 
-print("🎉 All downloads finished!")
+print(" All downloads finished!")
+
