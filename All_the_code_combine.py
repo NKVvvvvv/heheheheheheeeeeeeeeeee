@@ -3,13 +3,11 @@ import requests
 import subprocess
 
 # === SETTINGS ===
-base_url = "<link of the vide>"  #enter the url of the download without the video_{}.ts 
-
-quality = "720p"   # change to "240p" if you want that version
-start = 1
-end = 543
+base_url = "http://example.com/videos"
+quality = "720p"
+start = 0
+end = 1000
 save_folder = "downloads"
-merged_video = "final_video.mp4"
 
 # === CREATE SAVE FOLDER ===
 os.makedirs(save_folder, exist_ok=True)
@@ -17,13 +15,12 @@ os.makedirs(save_folder, exist_ok=True)
 # === DOWNLOAD LOOP ===
 for i in range(start, end + 1):
     url = f"{base_url}/{quality}/video_{i}.ts"
-    filename = os.path.join(save_folder, f"video_{i}.ts")
 
-    if os.path.exists(filename):
-        print(f" Skipping {filename}, already exists.")
-        continue
+    # zero-padded filename: video0001.ts
+    filename = os.path.join(save_folder, f"video{i:04d}.ts")
 
-    print(f" Downloading {url} ...")
+    print(f"⬇ Downloading {url}")
+
     try:
         r = requests.get(url, stream=True, timeout=30)
         r.raise_for_status()
@@ -33,26 +30,19 @@ for i in range(start, end + 1):
                     f.write(chunk)
         print(f" Saved {filename}")
     except Exception as e:
-        print(f"Failed {url} -> {e}")
+        print(f" Failed {url} -> {e}")
 
-# === CREATE FILE LIST FOR FFMPEG ===
-file_list = os.path.join(save_folder, "file_list.txt")
-with open(file_list, "w") as f:
-    for i in range(start, end + 1):
-        f.write(f"file 'video_{i}.ts'\n")
+print("🎉 All downloads finished!")
 
-# === MERGE USING FFMPEG ===
-print(" Merging all .ts files into one video...")
-cmd = [
-    "ffmpeg",
-    "-f", "concat",
-    "-safe", "0",
-    "-i", file_list,
-    "-c", "copy",
-    merged_video
-]
+# === MERGE STEP USING CMD COPY ===
+print("Merging all .ts files into merged.ts ...")
 
-subprocess.run(cmd)
+merge_command = "copy /b *.ts merged.ts"
 
-print(f"🎉 Done! Final video saved as {merged_video}")
+subprocess.run(
+    ["cmd", "/c", merge_command],
+    cwd=save_folder,
+    shell=True
+)
 
+print("merged.ts created inside downloads folder")
